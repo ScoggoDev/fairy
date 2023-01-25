@@ -216,66 +216,6 @@ class _ChatPageState extends State<ChatPage> {
 }
 
 // ignore: must_be_immutable
-/*
-class TodoElementsWidget extends StatelessWidget {
-  TodoElementsWidget(
-      {key, required this.text, required this.elementOfTodoType});
-
-  final String text;
-  final ElementOfTodoType elementOfTodoType;
-  var _checked = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 0.0),
-      color: elementOfTodoType == ElementOfTodoType.task
-          ? taskBackgroundColor
-          : backgroundColor,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          elementOfTodoType == ElementOfTodoType.task
-              ? Container(
-                  margin: const EdgeInsets.only(right: 16.0, left: 22.0),
-                  child: Checkbox(
-                    value: _checked,
-                    onChanged: (bool? value) {
-                      _checked = !_checked;
-                    },
-                )
-              )
-              : Container(
-                    child: Checkbox(value: _checked, onChanged: (bool? value) { _checked = !_checked; },) //TODO: onChanged: onChanged)
-                  ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 7.0),
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                  ),
-                  child: Text(
-                    text,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge
-                        ?.copyWith(color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-*/
-
-// ignore: must_be_immutable
 class GoalElementsWidget extends StatelessWidget {
   GoalElementsWidget({key, required this.text, required this.tasks, required this.elementOfTodoType});
 
