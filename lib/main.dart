@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'api/model.dart';
 
 void main() {
+  print("HOLA");
   runApp(const MyApp());
 }
 
@@ -31,9 +32,11 @@ class ChatPage extends StatefulWidget {
 }
 
 Future<String> generateResponse(String prompt) async {
-  const apiKey = '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';
+  print("object");
+  const apiKey = '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';
 
   var url = Uri.https("api.openai.com", "/v1/completions");
+  print(url);
   final response = await http.post(
     url,
     headers: {
@@ -53,7 +56,8 @@ Future<String> generateResponse(String prompt) async {
 
   // Do something with the response
   Map<String, dynamic> newresponse = jsonDecode(response.body);
-
+  print("RESPONSE " + newresponse['choices'][0]['text']);
+  print("RESPONSE " + response.body);
   return newresponse['choices'][0]['text'];
 }
 
@@ -125,7 +129,7 @@ class _ChatPageState extends State<ChatPage> {
                 isLoading = true;
               },
             );
-            var input = 'I want to ' + _textController.text + ' divide this goal into smaller steps and return it in a todo list format. Also estimate the task on each task. Lastly, make a sum of the estimated time for the whole goal.';
+            var input = 'I want to ' + _textController.text + ' divide this goal into smaller steps and return it in a todo list format.';
             _textController.clear();
             Future.delayed(const Duration(milliseconds: 50))
                 .then((_) => _scrollDown());
@@ -228,7 +232,7 @@ class GoalElementsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 0.0),
-      color: Colors.blue,
+      color: taskBackgroundColor,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,14 +282,15 @@ class _TodoElementsWidgetState extends State<TodoElementsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    bool isGoal = elementOfTodoType == ElementOfTodoType.goal;
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 0.0),
-      color: elementOfTodoType == ElementOfTodoType.goal ? Colors.blue : Colors.white,
+      margin: isGoal ? const EdgeInsets.symmetric(vertical: 0.0) : const EdgeInsets.only(left: 40.0),
+      color: isGoal ? backgroundColor : taskBackgroundColor,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
             Container(
-                  margin: const EdgeInsets.only(right: 16.0, left: 22.0),
+                  margin: const EdgeInsets.only(right: 16.0, left: 0),
                   child: Checkbox(
                     value: _isCompleted,
                     onChanged: (bool? value) {
@@ -301,7 +306,7 @@ class _TodoElementsWidgetState extends State<TodoElementsWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 7.0),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 0.0),
                     decoration: _isCompleted 
                       ? BoxDecoration(
                           border: Border(
@@ -311,15 +316,26 @@ class _TodoElementsWidgetState extends State<TodoElementsWidget> {
                             style: BorderStyle.solid)),
                       )
                   : null,
-                    child: _isCompleted ? 
-                      Text(
-                        text,
-                        style: TextStyle(
-                          decoration: TextDecoration.lineThrough,
-                          color: Colors.black,
-                        ),
-                      ):
-                      Text(text),
+                    child: 
+                      Row(children: [
+                        _isCompleted ? 
+                          Expanded(
+                            child: Text(
+                              text,
+                              style: TextStyle(
+                                decoration: TextDecoration.lineThrough,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ):
+                          Expanded(child: Text(
+                              text,
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),),
+                      ],
+                    )  
                   ),
                 ],
               ),
@@ -327,5 +343,8 @@ class _TodoElementsWidgetState extends State<TodoElementsWidget> {
         ],
       ),
     );
+  }
+
+  void deleteOnPressed() {
   }
 }
