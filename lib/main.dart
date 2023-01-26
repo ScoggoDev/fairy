@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: ChatPage(),
+      home: TodoPage(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -24,11 +24,11 @@ class MyApp extends StatelessWidget {
 const backgroundColor = Color(0xff343541);
 const taskBackgroundColor = Color(0xff444654);
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({key});
+class TodoPage extends StatefulWidget {
+  const TodoPage({key});
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<TodoPage> createState() => _TodoPageState();
 }
 
 Future<String> generateResponse(String prompt) async {
@@ -61,7 +61,7 @@ Future<String> generateResponse(String prompt) async {
   return newresponse['choices'][0]['text'];
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _TodoPageState extends State<TodoPage> {
   final _textController = TextEditingController();
   final _scrollController = ScrollController();
   final List<ElementOfTodo> _messages = [];
@@ -122,6 +122,7 @@ class _ChatPageState extends State<ChatPage> {
               () {
                 _messages.add(
                   ElementOfTodo(
+                    id: _messages.length,
                     text: _textController.text,
                     elementOfTodoType: ElementOfTodoType.goal,
                   ),
@@ -138,6 +139,7 @@ class _ChatPageState extends State<ChatPage> {
                 isLoading = false;
                 _messages.add(
                   ElementOfTodo(
+                    id: _messages.length,
                     text: value,
                     elementOfTodoType: ElementOfTodoType.task,
                   ),
@@ -179,14 +181,28 @@ class _ChatPageState extends State<ChatPage> {
       itemBuilder: (context, index) {
         var message = _messages[index];
         if(message.elementOfTodoType == ElementOfTodoType.goal) {
-            return TodoElementsWidget(
-              text: message.text,
-              elementOfTodoType: message.elementOfTodoType,
-              onChanged: (bool value) {
+            return Dismissible(
+              key: Key(message.id.toString()),
+              onDismissed: (direction) {
+                // Remove the item from the data source.
+                setState(() {
+                  _messages.removeAt(index);
+                });
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('$message dismissed')));
+                },
+                background: Container(color: Colors.red),
+                child:
+                TodoElementsWidget(
+                  text: message.text,
+                  elementOfTodoType: message.elementOfTodoType,
+                  onChanged: (bool value) {
 
-              },
-            );
-          } else {
+                  },
+                )
+              );
+            }
+           else {
             // Split the input string into lines
             List<String> lines = message.text.split("\n");
 
@@ -200,11 +216,24 @@ class _ChatPageState extends State<ChatPage> {
                 tasks.add(line);
               }
             }
-            return GoalElementsWidget(
-              text: message.text,
-              elementOfTodoType: message.elementOfTodoType,
-              tasks: tasks,
-            );
+            return Dismissible(
+              key: Key(message.id.toString()),
+              onDismissed: (direction) {
+                // Remove the item from the data source.
+                setState(() {
+                  _messages.removeAt(index);
+                });
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('$message dismissed')));
+                },
+                background: Container(color: Colors.red),
+                child:
+                GoalElementsWidget(
+                  text: message.text,
+                  elementOfTodoType: message.elementOfTodoType,
+                  tasks: tasks,
+                )
+              );
           }
         }
     );
@@ -244,6 +273,7 @@ class GoalElementsWidget extends StatelessWidget {
                 children: <Widget>[
                   SingleChildScrollView(
                     child: Column(
+                      //TODO: Cambiar arquitectura para que funcione el dismissible
                       children: tasks.map((task) => TodoElementsWidget(text: task, elementOfTodoType: elementOfTodoType, onChanged: _updateCheckbox)).toList(),
                     ),
                   )
